@@ -1,0 +1,39 @@
+set(IOT_API_MAJOR @IOTAPI_MAJOR@)
+set(IOT_API_MINOR @IOTAPI_MINOR@)
+set(IOT_API_PATCH @IOTAPI_PATCH@)
+set(IOT_API_VERSION "${IOT_API_MAJOR}.${IOT_API_MINOR}.${IOT_API_PATCH}")
+math(EXPR IOT_API_MINOR_NUMBER "${IOT_API_MINOR} * 1000 + ${IOT_API_PATCH}")
+
+if (NOT IOT_API_INCLUDE_DIR OR NOT IOT_API_LIBRARIES)
+
+        find_path(IOT_API_INCLUDE_DIR IOT_API.h
+            PATH_SUFFIXES IOT_API)
+
+        find_library(IOT_API_LIBRARIES IOT_API
+            PATHS ${CMAKE_INSTALL_PREFIX}/bin
+                ${CMAKE_INSTALL_PREFIX}/lib)
+
+        if (IOT_API_INCLUDE_DIR AND IOT_API_LIBRARIES)
+            if(IOT_API_FIND_VERSION)
+                if (IOT_API_FIND_REQUIRED)
+                    if(NOT IOT_API_FIND_VERSION_MAJOR EQUAL IOT_API_MAJOR)
+                        message(FATAL_ERROR "IOT_API was found: but it is the version ${IOT_API_VERSION} in stead of ${IOT_API_FIND_VERSION}")
+                    endif()
+                    math(EXPR REQUIRED_MINOR_NUMBER "${IOT_API_FIND_VERSION_MINOR} * 1000 + ${IOT_API_FIND_VERSION_PATCH}")
+
+                    if(REQUIRED_MINOR_NUMBER GREATER IOT_API_MINOR_NUMBER)
+                        message(FATAL_ERROR "IOT_API was found: but it is the version ${IOT_API_VERSION} in stead of ${IOT_API_FIND_VERSION}")
+                    endif()
+                endif ()
+
+                message(STATUS "IOT_API_FIND_VERSION=${IOT_API_FIND_VERSION} ${IOT_API_FIND_VERSION_MAJOR} ${IOT_API_FIND_VERSION_MINOR} ${IOT_API_FIND_VERSION_PATCH} ")
+            endif()
+            message(STATUS "Found IOT_API library ${IOT_API_INCLUDE_DIR} : ${IOT_API_LIBRARIES}")
+            set(IOT_API_FOUND TRUE)
+        else (IOT_API_INCLUDE_DIR AND IOT_API_LIBRARIES)
+            set(IOT_API_FOUND FALSE)
+            if (IOT_API_FIND_REQUIRED)
+                message(FATAL_ERROR "IOT_API was not found: ${IOT_API_LIBRARIES} : ${IOT_API_INCLUDE_DIR}")
+            endif ()
+        endif (IOT_API_INCLUDE_DIR AND IOT_API_LIBRARIES)
+endif ()
